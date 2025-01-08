@@ -27,9 +27,7 @@ spec:
     {{ .Values.filer.ingress.tls | default list | toYaml | nindent 6}}
   rules:
   - http:
-      paths:
-      - path: /sw-filer/?(.*)
-        pathType: ImplementationSpecific
+        pathType: Prefix
         backend:
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
           service:
