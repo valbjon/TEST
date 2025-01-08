@@ -270,7 +270,7 @@ master:
     timeoutSeconds: 10
 
 volume:
-  enabled: true
+  enabled: false
   imageOverride: null
   restartPolicy: null
   port: 8080
