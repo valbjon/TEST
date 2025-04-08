@@ -707,7 +707,7 @@ filer:
   containerSecurityContext: {}
 
   ingress:
-    enabled: true
+    enabled: false
     className: "nginx"
     # host: false for "*" hostname
     host: "seaweedfs.cluster.local"
@@ -941,7 +941,7 @@ s3:
     timeoutSeconds: 10
 
   ingress:
-    enabled: true
+    enabled: false
     className: "nginx"
     # host: false for "*" hostname
     host: "localhost"
