@@ -5,7 +5,7 @@
 ### Add the helm repo
 
 ```bash
-helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helm
+helm repo add seaweedfs https://seaweedfs.github.io/seaweedfs/helms
 ```
 
 ### Install the helm chart
