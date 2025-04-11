@@ -15,7 +15,7 @@ spec:
     - {{ $value.accessMode | quote }}
   resources:
     requests:
-      storage: "{{ $value.size }}G"
+      storage: "{{ $value.size }}Gi"
   storageClassName: {{ $value.storageClass }}
 {{- end }}
 {{- end }}
