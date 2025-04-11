@@ -14,4 +14,4 @@ spec:
     name: redis-data-redis-replicas-0
     namespace: redis
   hostPath:
-    path: /home/redis/replica
+    path: /home/replicas
