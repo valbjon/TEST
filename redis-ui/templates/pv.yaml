@@ -1,15 +1,18 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
+  labels:
+    argocd.argoproj.io/instance: redis-ui
   name: redis-ui
 spec:
-  capacity:
-    storage: 1Gi
-  claimRef: 
-    name: redis-ui-config
   accessModes:
     - ReadWriteOnce
-  persistentVolumeReclaimPolicy: Retain
-  storageClassName: "default"
+  capacity:
+    storage: 1Gi
+  claimRef:
+    name: redis-ui-config
+    namespace: redis
   hostPath:
     path: /home/redis-ui
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: default
