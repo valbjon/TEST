@@ -17,7 +17,7 @@ image:
 imagePullSecrets: ''
 ingress:
   enabled: true
-  hosts: redis-ui.ai-test.hzyele.com
+  hosts: redis-ui.com
   loadbalancer: nginx
   locations:
   - path: /
