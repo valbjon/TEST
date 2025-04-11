@@ -10,5 +10,8 @@ spec:
     - ReadWriteOnce
   persistentVolumeReclaimPolicy: Retain
   storageClassName: "default"
+  claimRef:
+    name: redis-data-redis-replicas-0
+    namespace: redis
   hostPath:
     path: /home/redis/replica
