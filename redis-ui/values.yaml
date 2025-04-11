@@ -39,7 +39,7 @@ persistence:
     in: /settings
     name: config
     size: '1'
-    storageClass: nfs-client
+    storageClass: default
 prometheus:
   enabled: false
   port: ''
