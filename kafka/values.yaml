@@ -668,7 +668,7 @@ defaultInitContainers:
 controller:
   ## @param controller.replicaCount Number of Kafka controller-eligible nodes
   ##
-  replicaCount: 3
+  replicaCount: 1
   ## @param controller.controllerOnly If set to true, controller nodes will be deployed as dedicated controllers, instead of controller+broker processes.
   ##
   controllerOnly: false
@@ -1065,14 +1065,14 @@ controller:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: ""
+    storageClass: "default"
     ## @param controller.persistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
       - ReadWriteOnce
     ## @param controller.persistence.size PVC Storage Request for Kafka data volume
     ##
-    size: 8Gi
+    size: 2Gi
     ## @param controller.persistence.annotations Annotations for the PVC
     ##
     annotations: {}
