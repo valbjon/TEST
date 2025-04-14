@@ -1105,14 +1105,14 @@ controller:
     ## If undefined (the default) or set to null, no storageClassName spec is
     ## set, choosing the default provisioner.
     ##
-    storageClass: ""
+    storageClass: "default"
     ## @param controller.logPersistence.accessModes Persistent Volume Access Modes
     ##
     accessModes:
       - ReadWriteOnce
     ## @param controller.logPersistence.size PVC Storage Request for Kafka logs volume
     ##
-    size: 8Gi
+    size: 2Gi
     ## @param controller.logPersistence.annotations Annotations for the PVC
     ##
     annotations: {}
@@ -1528,7 +1528,7 @@ broker:
       - ReadWriteOnce
     ## @param broker.persistence.size PVC Storage Request for Kafka data volume
     ##
-    size: 8Gi
+    size: 2Gi
     ## @param broker.persistence.annotations Annotations for the PVC
     ##
     annotations: {}
