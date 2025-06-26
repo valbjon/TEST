@@ -82,6 +82,9 @@ jobs:
           COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-vault-report.json)
           echo "Vault provider vulnerabilities (>= Medium): $COUNT"
 
+      - name: Cat Vault JSON report
+        run: cat trivy-vault-report.json
+
       - name: Run Trivy JSON scan against Random provider
         uses: aquasecurity/trivy-action@0.28.0
         with:
@@ -97,3 +100,6 @@ jobs:
         run: |
           COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-random-report.json)
           echo "Random provider vulnerabilities (>= Medium): $COUNT"
+
+      - name: Cat Random JSON report
+        run: cat trivy-random-report.json
