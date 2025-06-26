@@ -79,7 +79,7 @@ jobs:
 
       - name: Show Vulnerability Count for Vault provider
         run: |
-          COUNT=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-vault-report.json)
+          COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-vault-report.json)
           echo "Vault provider vulnerabilities (>= Medium): $COUNT"
 
       - name: Run Trivy JSON scan against Random provider
@@ -95,5 +95,5 @@ jobs:
 
       - name: Show Vulnerability Count for Random provider
         run: |
-          COUNT=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-random-report.json)
+          COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-random-report.json)
           echo "Random provider vulnerabilities (>= Medium): $COUNT"
