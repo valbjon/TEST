@@ -12,8 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install unzip & curl
-        run: sudo apt-get update && sudo apt-get install -y unzip curl
+      - name: Install prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl
 
       - name: Download Vault provider v5.0.0
         run: |
@@ -35,8 +37,9 @@ jobs:
 
       - name: Prepare HCP provider (Go 1.24)
         run: |
-          mkdir -p terraform-provider-hcp
-          mv terraform-provider-hcp hcp/terraform-provider-hcp
+          # create the target folder and move+rename your checked-in binary
+          mkdir -p hcp/terraform-provider-hcp
+          mv ./terraform-provider hcp/terraform-provider-hcp/terraform-provider-hcp
 
       - name: Upload Vault provider
         uses: actions/upload-artifact@v4
@@ -102,10 +105,12 @@ jobs:
           FROM alpine:latest
           COPY hcp/terraform-provider-hcp/terraform-provider-hcp /usr/local/bin/terraform-provider-hcp
           EOF
-          docker build -f Dockerfile.hcp -t terraform-provider-hcp:latest .
+          docker build -f Dockerfile.hcp -t terraform-provider-hcp:go1.24 .
 
       - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
 
       - name: Scan Vault provider image
         uses: aquasecurity/trivy-action@0.28.0
@@ -149,7 +154,7 @@ jobs:
         uses: aquasecurity/trivy-action@0.28.0
         with:
           scan-type: 'image'
-          scan-ref: 'terraform-provider-hcp:latest'
+          scan-ref: 'terraform-provider-hcp:go1.24'
           scanners: 'vuln'
           severity: 'CRITICAL,HIGH,MEDIUM'
           format: 'json'
