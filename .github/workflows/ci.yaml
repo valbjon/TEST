@@ -2,11 +2,8 @@ name: CI
 
 on:
   push:
-    tags:        # only run on tag pushes if you want the same behavior as git describe --exact-match
-      - '*'
     branches:
       - main
-  pull_request:
 
 jobs:
 
