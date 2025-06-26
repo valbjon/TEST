@@ -51,30 +51,32 @@ jobs:
     needs: DownloadProviders
 
     steps:
-      - name: Download Vault provider
+      - name: Download Vault provider artifact
         uses: actions/download-artifact@v4
         with:
           name: terraform-provider-vault
           path: ./vault/terraform-provider-vault
 
-      - name: Download Random provider
+      - name: Download Random provider artifact
         uses: actions/download-artifact@v4
         with:
           name: terraform-provider-random
           path: ./random/terraform-provider-random
 
       - name: Run Trivy scan against Vault provider
-        uses: aquasecurity/trivy-action@v1
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: filesystem
-          scan-target: ./vault/terraform-provider-vault
-          severity: CRITICAL
+          scan-type: 'fs'
+          scan-ref: './vault/terraform-provider-vault'
+          format: 'table'
+          severity: 'CRITICAL'
           exit-code: '1'
 
       - name: Run Trivy scan against Random provider
-        uses: aquasecurity/trivy-action@v1
+        uses: aquasecurity/trivy-action@0.28.0
         with:
-          scan-type: filesystem
-          scan-target: ./random/terraform-provider-random
-          severity: CRITICAL
+          scan-type: 'fs'
+          scan-ref: './random/terraform-provider-random'
+          format: 'table'
+          severity: 'CRITICAL'
           exit-code: '1'
