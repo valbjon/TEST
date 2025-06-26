@@ -15,34 +15,42 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install prerequisites
-        run: sudo apt-get update && sudo apt-get install -y unzip curl jq
+        run: sudo apt-get update && sudo apt-get install -y unzip curl jq docker.io
 
-      - name: Download Vault provider v5.0.0
+      - name: Download & prepare Vault provider v5.0.0
         run: |
           curl -sSL \
             https://releases.hashicorp.com/terraform-provider-vault/5.0.0/terraform-provider-vault_5.0.0_linux_amd64.zip \
             -o vault.zip
-          unzip vault.zip
-          mv terraform-provider-vault_v5.0.0_linux_amd64 terraform-provider-vault
+          unzip vault.zip -d vault
+          mkdir -p vault/terraform-provider-vault
+          # Move the single binary into its own dir...
+          mv vault/* vault/terraform-provider-vault/
+          # ...then rename it to a stable name
+          mv vault/terraform-provider-vault/* \
+             vault/terraform-provider-vault/terraform-provider-vault
 
-      - name: Download Random provider v3.7.2
+      - name: Download & prepare Random provider v3.7.2
         run: |
           curl -sSL \
             https://releases.hashicorp.com/terraform-provider-random/3.7.2/terraform-provider-random_3.7.2_linux_amd64.zip \
             -o random.zip
-          unzip random.zip
-          mv terraform-provider-random_v3.7.2_linux_amd64 terraform-provider-random
+          unzip random.zip -d random
+          mkdir -p random/terraform-provider-random
+          mv random/* random/terraform-provider-random/
+          mv random/terraform-provider-random/* \
+             random/terraform-provider-random/terraform-provider-random
 
       - name: Prepare HCP provider (Go 1.24)
         run: |
-          # rename the checked-in binary
+          # rename your checked-in binary (from actions/checkout)
           mv terraform-provider terraform-provider-hcp
 
       - name: Build & scan Vault image
         run: |
           cat <<EOF > Dockerfile.vault
           FROM alpine:latest
-          COPY terraform-provider-vault /usr/local/bin/terraform-provider-vault
+          COPY vault/terraform-provider-vault/terraform-provider-vault /usr/local/bin/terraform-provider-vault
           EOF
           docker build -f Dockerfile.vault -t vault:5.0.0 .
           trivy image \
@@ -59,7 +67,7 @@ jobs:
         run: |
           cat <<EOF > Dockerfile.random
           FROM alpine:latest
-          COPY terraform-provider-random /usr/local/bin/terraform-provider-random
+          COPY random/terraform-provider-random/terraform-provider-random /usr/local/bin/terraform-provider-random
           EOF
           docker build -f Dockerfile.random -t random:3.7.2 .
           trivy image \
