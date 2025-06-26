@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare HCP provider (Go 1.24)
         run: |
-          mkdir -p hcp/terraform-provider-hcp
+          mkdir -p terraform-provider-hcp
           mv terraform-provider-hcp hcp/terraform-provider-hcp
 
       - name: Upload Vault provider
