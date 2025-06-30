@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install prerequisites
-        run: sudo apt-get update && sudo apt-get install -y unzip curl jq docker.io
+        run: sudo apt-get update && sudo apt-get install -y unzip curl jq
 
       - name: Download & prepare Vault provider v5.0.0
         run: |
@@ -24,11 +24,15 @@ jobs:
             -o vault.zip
           unzip vault.zip -d vault
           mkdir -p vault/terraform-provider-vault
-          # Move the single binary into its own dir...
           mv vault/* vault/terraform-provider-vault/
-          # ...then rename it to a stable name
-          mv vault/terraform-provider-vault/* \
-             vault/terraform-provider-vault/terraform-provider-vault
+          mv vault/terraform-provider-vault/* vault/terraform-provider-vault/terraform-provider-vault
+          chmod +x vault/terraform-provider-vault/terraform-provider-vault
+
+      - name: Scan Vault provider
+        run: |
+          trivy rootfs \
+            --scanners vuln \
+            vault/terraform-provider-vault/terraform-provider-vault
 
       - name: Download & prepare Random provider v3.7.2
         run: |
@@ -38,61 +42,22 @@ jobs:
           unzip random.zip -d random
           mkdir -p random/terraform-provider-random
           mv random/* random/terraform-provider-random/
-          mv random/terraform-provider-random/* \
-             random/terraform-provider-random/terraform-provider-random
+          mv random/terraform-provider-random/* random/terraform-provider-random/terraform-provider-random
+          chmod +x random/terraform-provider-random/terraform-provider-random
+
+      - name: Scan Random provider
+        run: |
+          trivy rootfs \
+            --scanners vuln \
+            random/terraform-provider-random/terraform-provider-random
 
       - name: Prepare HCP provider (Go 1.24)
         run: |
-          # rename your checked-in binary (from actions/checkout)
           mv terraform-provider terraform-provider-hcp
+          chmod +x terraform-provider-hcp
 
-      - name: Build & scan Vault image
+      - name: Scan HCP provider
         run: |
-          cat <<EOF > Dockerfile.vault
-          FROM alpine:latest
-          COPY vault/terraform-provider-vault/terraform-provider-vault /usr/local/bin/terraform-provider-vault
-          EOF
-          docker build -f Dockerfile.vault -t vault:5.0.0 .
-          trivy image \
-            --format json \
-            --severity CRITICAL,HIGH,MEDIUM \
-            --exit-code 1 \
-            --output trivy-vault-report.json \
-            vault:5.0.0
-          COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-vault-report.json)
-          echo "Vault image vulnerabilities (>=Medium): $COUNT"
-          cat trivy-vault-report.json
-
-      - name: Build & scan Random image
-        run: |
-          cat <<EOF > Dockerfile.random
-          FROM alpine:latest
-          COPY random/terraform-provider-random/terraform-provider-random /usr/local/bin/terraform-provider-random
-          EOF
-          docker build -f Dockerfile.random -t random:3.7.2 .
-          trivy image \
-            --format json \
-            --severity CRITICAL,HIGH,MEDIUM \
-            --exit-code 1 \
-            --output trivy-random-report.json \
-            random:3.7.2
-          COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-random-report.json)
-          echo "Random image vulnerabilities (>=Medium): $COUNT"
-          cat trivy-random-report.json
-
-      - name: Build & scan HCP image
-        run: |
-          cat <<EOF > Dockerfile.hcp
-          FROM alpine:latest
-          COPY terraform-provider-hcp /usr/local/bin/terraform-provider-hcp
-          EOF
-          docker build -f Dockerfile.hcp -t hcp:go1.24 .
-          trivy image \
-            --format json \
-            --severity CRITICAL,HIGH,MEDIUM \
-            --exit-code 1 \
-            --output trivy-hcp-report.json \
-            hcp:go1.24
-          COUNT=$(jq '[.Results[]? | .Vulnerabilities? // [] | .[]] | length' trivy-hcp-report.json)
-          echo "HCP image vulnerabilities (>=Medium): $COUNT"
-          cat trivy-hcp-report.json
+          trivy rootfs \
+            --scanners vuln \
+            ./terraform-provider-hcp
