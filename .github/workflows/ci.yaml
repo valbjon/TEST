@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     tags:
-      - '*'          # run on any tag push
+      - '*'        # run on any tag push
     branches:
       - main
   pull_request:
@@ -27,7 +27,6 @@ jobs:
             -o vault.zip
           mkdir -p vault/terraform-provider-vault
           unzip vault.zip -d vault/terraform-provider-vault
-          chmod +x vault/terraform-provider-vault/*
 
       - name: Download Random provider v3.7.2
         run: |
@@ -36,7 +35,6 @@ jobs:
             -o random.zip
           mkdir -p random/terraform-provider-random
           unzip random.zip -d random/terraform-provider-random
-          chmod +x random/terraform-provider-random/*
 
       - name: Upload Vault provider
         uses: actions/upload-artifact@v4
@@ -62,26 +60,20 @@ jobs:
           name: terraform-provider-vault
           path: ./vault/terraform-provider-vault
 
+      - name: Make Vault provider executable
+        run: chmod +x vault/terraform-provider-vault/*
+
+      - name: Scan Vault provider
+        run: trivy rootfs --scanners vuln vault/terraform-provider-vault/*
+
       - name: Download Random provider
         uses: actions/download-artifact@v4
         with:
           name: terraform-provider-random
           path: ./random/terraform-provider-random
 
-      - name: Run Trivy scan against Vault provider
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: rootfs
-          scan-target: ./vault/terraform-provider-vault/terraform-provider-vault
-          scanners: vuln
-          severity: CRITICAL
-          exit-code: '1'
+      - name: Make Random provider executable
+        run: chmod +x random/terraform-provider-random/*
 
-      - name: Run Trivy scan against Random provider
-        uses: aquasecurity/trivy-action@0.31.0
-        with:
-          scan-type: rootfs
-          scan-target: ./random/terraform-provider-random/terraform-provider-random
-          scanners: vuln
-          severity: CRITICAL
-          exit-code: '1'
+      - name: Scan Random provider
+        run: trivy rootfs --scanners vuln random/terraform-provider-random/*
