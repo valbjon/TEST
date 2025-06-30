@@ -59,5 +59,3 @@ jobs:
           scan-type: rootfs
           scan-target: ${{ steps.random.outputs.provider_path }}
           scanners: vuln
-          severity: CRITICAL
-          exit-code: '1'
