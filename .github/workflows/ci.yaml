@@ -39,13 +39,13 @@ jobs:
           chmod +x random/terraform-provider-random/*
 
       - name: Upload Vault provider
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-provider-vault
           path: vault/terraform-provider-vault
 
       - name: Upload Random provider
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: terraform-provider-random
           path: random/terraform-provider-random
@@ -57,13 +57,13 @@ jobs:
 
     steps:
       - name: Download Vault provider
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-provider-vault
           path: ./vault/terraform-provider-vault
 
       - name: Download Random provider
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: terraform-provider-random
           path: ./random/terraform-provider-random
