@@ -15,49 +15,42 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install prerequisites
-        run: sudo apt-get update && sudo apt-get install -y unzip curl jq
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y unzip curl jq
 
       - name: Download & prepare Vault provider v5.0.0
         run: |
           curl -sSL \
             https://releases.hashicorp.com/terraform-provider-vault/5.0.0/terraform-provider-vault_5.0.0_linux_amd64.zip \
             -o vault.zip
-          unzip vault.zip -d vault
           mkdir -p vault/terraform-provider-vault
-          mv vault/* vault/terraform-provider-vault/
-          mv vault/terraform-provider-vault/* vault/terraform-provider-vault/terraform-provider-vault
+          unzip vault.zip -d vault/terraform-provider-vault
           chmod +x vault/terraform-provider-vault/terraform-provider-vault
 
       - name: Scan Vault provider
         run: |
-          trivy rootfs \
-            --scanners vuln \
-            vault/terraform-provider-vault/terraform-provider-vault
+          trivy rootfs --scanners vuln vault/terraform-provider-vault/terraform-provider-vault
 
       - name: Download & prepare Random provider v3.7.2
         run: |
           curl -sSL \
             https://releases.hashicorp.com/terraform-provider-random/3.7.2/terraform-provider-random_3.7.2_linux_amd64.zip \
             -o random.zip
-          unzip random.zip -d random
           mkdir -p random/terraform-provider-random
-          mv random/* random/terraform-provider-random/
-          mv random/terraform-provider-random/* random/terraform-provider-random/terraform-provider-random
+          unzip random.zip -d random/terraform-provider-random
           chmod +x random/terraform-provider-random/terraform-provider-random
 
       - name: Scan Random provider
         run: |
-          trivy rootfs \
-            --scanners vuln \
-            random/terraform-provider-random/terraform-provider-random
+          trivy rootfs --scanners vuln random/terraform-provider-random/terraform-provider-random
 
       - name: Prepare HCP provider (Go 1.24)
         run: |
+          # rename the checked-in binary and make it executable
           mv terraform-provider terraform-provider-hcp
           chmod +x terraform-provider-hcp
 
       - name: Scan HCP provider
         run: |
-          trivy rootfs \
-            --scanners vuln \
-            ./terraform-provider-hcp
+          trivy rootfs --scanners vuln ./terraform-provider-hcp
